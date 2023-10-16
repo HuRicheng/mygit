@@ -1,11 +1,10 @@
 package com.jxd.orderingsys.model;
 
-import com.baomidou.mybatisplus.annotation.TableId;
 
 /**
  * @ClassName Odps
  * @Description TODO
- * @Author 胡日成
+ * @Author 胡日成 你好
  * @Date 2023/10/8 19:33
  * @Version 1.0
  */
