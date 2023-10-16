@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jxd.orderingsys.dao.IOrderedMapper">
+    <resultMap id="empVO" type="com.jxd.orderingsys.vo.EmpVO">
+        <result column="eid" property="id"/>
+        <result column="ename" property="name"/>
+    </resultMap>
+
+    <resultMap id="OdfdVO" type="com.jxd.orderingsys.vo.OdfdVO">
+        <result column="foodId" property="foodId"/>
+        <result column="foodName" property="foodName"/>
+        <result column="foodCount" property="foodCount"/>
+        <result column="foodPrice" property="foodPrice"/>
+        <result column="foodComments" property="foodComments"/>
+    </resultMap>
+
+
+    <resultMap id="orderWithAll" type="com.jxd.orderingsys.vo.OrderWithAll">
+        <result column="id" property="id"/>
+        <result column="time" property="time"/>
+        <result column="applicantId" property="applicantId"/>
+        <result column="applicantName" property="applicantName"/>
+        <result column="dname" property="dname"/>
+        <result column="orderType" property="orderType"/>
+        <result column="orderCount" property="orderCount"/>
+        <result column="totalPrice" property="totalPrice"/>
+        <result column="comments" property="comments"/>
+        <result column="state" property="state"/>
+        <result column="uuid" property="uuid"/>
+        <collection property="empList" resultMap="empVO"/>
+        <collection property="odfdList" resultMap="OdfdVO"/>
+    </resultMap>
+
+    <update id="managerConfirm" parameterType="list">
+        update ordered set state = '待系统确认' where id in
+        <foreach collection="orderids" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </update>
+    <update id="systemConfirm" parameterType="list">
+        update ordered set state = '已完成' where id in
+        <foreach collection="orderids" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </update>
+    <update id="delectBatch" parameterType="list">
+        update ordered set visible = 2 where id in
+        <foreach collection="orderids" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </update>
+
+    <select id="selectIdByUUid" resultType="java.lang.Integer">
+        select id from ordered
+        where uuid = #{uuid}
+    </select>
+
+    <select id="getAllOrderWithAllList" resultMap="orderWithAll" parameterType="map">
+        select o.id,d.name dname,e.id eid,e.name ename,DATE_FORMAT(time, '%Y-%m-%d %H:%i:%s') time,
+        applicant_id applicantId,a.name applicantName,order_type orderType,order_count orderCount,
+        total_price totalPrice,state,comments,uuid,
+        f.name foodName,f.price foodPrice,od.food_count foodCount,od.food_id foodId,od.food_comments foodComments
+        from ordered o
+        left join odps p on o.id = p.order_id
+        left join emp e on p.eid = e.id
+        left join emp a on a.id = o.applicant_id
+        left join dept d on e.dept_id = d.id
+        left join odfd od on o.id = od.order_id
+        left join food f on f.id = od.food_id
+        <where>
+            <if test="querymap.deptId != '' and querymap.deptId != null and querymap.deptId != 0">
+                d.id = #{querymap.deptId}
+            </if>
+            <if test="querymap.state != '' and querymap.state != null">
+                and state = #{querymap.state}
+            </if>
+            <if test="querymap.dateStart != '' and querymap.dateStart != null">
+                and date(time) &gt;= #{querymap.dateStart}
+            </if>
+            <if test="querymap.dateEnd != '' and querymap.dateEnd != null">
+                and date(time) &lt;= #{querymap.dateEnd}
+            </if>
+            <if test="querymap.dateOne != '' and querymap.dateOne != null">
+                and date(time) = #{querymap.dateOne}
+            </if>
+            <if test="querymap.oid != '' and querymap.oid != null">
+                and o.id = #{querymap.oid}
+            </if>
+            <if test="querymap.applicantId != null and querymap.applicantId != ''">
+                and o.applicant_id = #{querymap.applicantId}
+            </if>
+            <if test="querymap.applicantName != null and querymap.applicantName != ''">
+                and a.name like "%" #{querymap.applicantName} "%"
+            </if>
+            <if test="true">
+                and visible = 1
+            </if>
+        </where>
+        order by o.id
+    </select>
+    <select id="getOrderWithAllById" resultMap="orderWithAll">
+        select o.id,d.name dname,e.id eid,e.name ename,DATE_FORMAT(time, '%Y-%m-%d %H:%i:%s') time,
+            applicant_id applicantId,a.name applicantName,order_type orderType,order_count orderCount,
+            total_price totalPrice,comments,
+            f.name foodName,f.price foodPrice,od.food_count foodCount,od.food_id foodId,od.food_comments foodComments
+            from ordered o
+            left join odps p on o.id = p.order_id
+            left join emp e on p.eid = e.id
+            left join emp a on a.id = o.applicant_id
+            left join dept d on e.dept_id = d.id
+            left join odfd od on o.id = od.order_id
+            left join food f on f.id = od.food_id
+            where o.id = #{oid}
+    </select>
+</mapper>

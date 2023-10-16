@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jxd.orderingsys.dao.IUserLoginMapper">
+
+    <select id="selectByUserNameAndPassword" resultType="com.jxd.orderingsys.model.Emp">
+        select id,name,sex,phone,dept_id,e.role from emp e
+        left join userlogin u on e.id = u.userid
+        where u.username = #{username} and u.password = #{password}
+    </select>
+</mapper>

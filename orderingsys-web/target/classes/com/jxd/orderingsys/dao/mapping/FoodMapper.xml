@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jxd.orderingsys.dao.IFoodMapper">
+
+
+    <select id="getAllFoodList" resultType="com.jxd.orderingsys.model.Food" parameterType="map">
+        select id,name,price,visibility from food
+        <where>
+            <if test="querymap.foodName != null and querymap.foodName != ''">
+                name like '%' #{querymap.foodName} '%'
+            </if>
+            <if test="querymap.isVisible != null and querymap.isVisible != ''">
+                and visibility = #{querymap.isVisible}
+            </if>
+        </where>
+
+        order by id
+    </select>
+</mapper>

@@ -1,0 +1,13 @@
+server:
+  port: 8086
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/ordersys?autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&serverTimezone=UTC
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: mysql
+mybatis-plus:
+  mapper-locations: classpath*:com/jxd/orderingsys/dao/mapping/*.xml
+  type-aliases-package: com.jxd.orderingsys.model
+  configuration:
+    map-underscore-to-camel-case: true
