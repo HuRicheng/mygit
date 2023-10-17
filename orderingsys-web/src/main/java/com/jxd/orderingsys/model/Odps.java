@@ -4,7 +4,7 @@ package com.jxd.orderingsys.model;
 /**
  * @ClassName Odps
  * @Description TODO
- * @Author 胡日成 你好
+ * @Author 胡日成
  * @Date 2023/10/8 19:33
  * @Version 1.0
  */
